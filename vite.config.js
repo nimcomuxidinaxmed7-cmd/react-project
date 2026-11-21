@@ -9,9 +9,10 @@ export default defineConfig({
     globals: true,
     coverage: {
       provider: 'v8',
-      include: [
-        'src/api/products.js',
-        'src/components/ProductCard.jsx'
+      include: ['src/**/*.{js,jsx}'],
+      exclude: [
+        'src/**/*.test.{js,jsx}',
+        'src/test-setup.js'
       ],
       reporter: ['text', 'html'],
       thresholds: {
