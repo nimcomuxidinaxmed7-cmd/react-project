@@ -1,15 +1,6 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 function Navbar() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  function handleLogout() {
-    logout();
-    navigate("/");
-  }
-
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
@@ -26,32 +17,12 @@ function Navbar() {
             Cart
           </Link>
 
-          {user ? (
-            <>
-              <span className="text-gray-600">
-                Hi, {user.name}
-              </span>
-
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" className="text-gray-700 hover:text-blue-600">
-              </Link>
-
-              <Link
-                to="/register"
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-              >
-                Register
-              </Link>
-            </>
-          )}
+          <Link
+            to="/register"
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          >
+            Register
+          </Link>
         </div>
       </div>
     </nav>
