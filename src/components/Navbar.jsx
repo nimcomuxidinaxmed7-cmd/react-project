@@ -42,7 +42,6 @@ function Navbar() {
           ) : (
             <>
               <Link to="/login" className="text-gray-700 hover:text-blue-600">
-                Login
               </Link>
 
               <Link
