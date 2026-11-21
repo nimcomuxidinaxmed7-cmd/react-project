@@ -1,57 +1,82 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { AuthProvider, useAuth } from './AuthContext'
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, beforeEach } from "vitest";
+import { AuthProvider, useAuth } from "./AuthContext";
 
 function TestComponent() {
-  const { user, register, logout } = useAuth()
+  const { user, register, login, logout } = useAuth();
 
   return (
     <div>
-      <p>{user ? user.name : 'No user'}</p>
-      <button onClick={() => register('Alex', 'alex@test.com')}>Register</button>
+      <p>{user ? user.name : "Not logged in"}</p>
+
+      <button onClick={() => register("Alex", "alex@test.com", "password123")}>
+        Register
+      </button>
+
+      <button onClick={() => login("alex@test.com", "password123")}>
+        Login
+      </button>
+
       <button onClick={logout}>Logout</button>
     </div>
-  )
+  );
 }
 
-describe('AuthContext', () => {
-  beforeEach(() => localStorage.clear())
+function renderAuth() {
+  return render(
+    <AuthProvider>
+      <TestComponent />
+    </AuthProvider>
+  );
+}
 
-  it('starts without a user', () => {
-    render(<AuthProvider><TestComponent /></AuthProvider>)
-    expect(screen.getByText('No user')).toBeInTheDocument()
-  })
+describe("AuthContext", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
 
-  it('registers and saves a user', async () => {
-    const user = userEvent.setup()
-    render(<AuthProvider><TestComponent /></AuthProvider>)
+  it("registers a new user", () => {
+    renderAuth();
 
-    await user.click(screen.getByText('Register'))
+    fireEvent.click(screen.getByText("Register"));
 
-    expect(screen.getByText('Alex')).toBeInTheDocument()
-    expect(JSON.parse(localStorage.getItem('shopease_user')).email)
-      .toBe('alex@test.com')
-  })
+    expect(screen.getByText("Alex")).toBeInTheDocument();
 
-  it('logs out and removes saved user', async () => {
-    const user = userEvent.setup()
-    render(<AuthProvider><TestComponent /></AuthProvider>)
+    const users = JSON.parse(localStorage.getItem("shopease_users"));
+    expect(users).toHaveLength(1);
+    expect(users[0].email).toBe("alex@test.com");
+  });
 
-    await user.click(screen.getByText('Register'))
-    await user.click(screen.getByText('Logout'))
+  it("logs in an existing user", () => {
+    localStorage.setItem(
+      "shopease_users",
+      JSON.stringify([
+        {
+          name: "Alex",
+          email: "alex@test.com",
+          password: "password123",
+        },
+      ])
+    );
 
-    expect(screen.getByText('No user')).toBeInTheDocument()
-    expect(localStorage.getItem('shopease_user')).toBeNull()
-  })
+    renderAuth();
 
-  it('loads a saved user', () => {
-    localStorage.setItem('shopease_user', JSON.stringify({
-      name: 'Sam',
-      email: 'sam@test.com'
-    }))
+    fireEvent.click(screen.getByText("Login"));
 
-    render(<AuthProvider><TestComponent /></AuthProvider>)
-    expect(screen.getByText('Sam')).toBeInTheDocument()
-  })
-})
+    expect(screen.getByText("Alex")).toBeInTheDocument();
+  });
+
+  it("logs out the user", () => {
+    localStorage.setItem(
+      "shopease_user",
+      JSON.stringify({ name: "Alex", email: "alex@test.com" })
+    );
+
+    renderAuth();
+
+    fireEvent.click(screen.getByText("Logout"));
+
+    expect(screen.getByText("Not logged in")).toBeInTheDocument();
+    expect(localStorage.getItem("shopease_user")).toBeNull();
+  });
+});

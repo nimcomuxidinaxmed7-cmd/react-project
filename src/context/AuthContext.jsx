@@ -8,11 +8,59 @@ export function AuthProvider({ children }) {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  function register(name, email) {
-    const newUser = { name, email };
+  function register(name, email, password) {
+    const users = JSON.parse(localStorage.getItem("shopease_users")) || [];
 
-    localStorage.setItem("shopease_user", JSON.stringify(newUser));
-    setUser(newUser);
+    const existingUser = users.find(
+      (item) => item.email === email
+    );
+
+    if (existingUser) {
+      return false;
+    }
+
+    const newUser = { name, email, password };
+
+    users.push(newUser);
+
+    localStorage.setItem("shopease_users", JSON.stringify(users));
+
+    const loggedInUser = { name, email };
+
+    localStorage.setItem(
+      "shopease_user",
+      JSON.stringify(loggedInUser)
+    );
+
+    setUser(loggedInUser);
+
+    return true;
+  }
+
+  function login(email, password) {
+    const users = JSON.parse(localStorage.getItem("shopease_users")) || [];
+
+    const foundUser = users.find(
+      (item) => item.email === email && item.password === password
+    );
+
+    if (!foundUser) {
+      return false;
+    }
+
+    const loggedInUser = {
+      name: foundUser.name,
+      email: foundUser.email,
+    };
+
+    localStorage.setItem(
+      "shopease_user",
+      JSON.stringify(loggedInUser)
+    );
+
+    setUser(loggedInUser);
+
+    return true;
   }
 
   function logout() {
@@ -21,7 +69,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, register, logout }}>
+    <AuthContext.Provider value={{ user, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
