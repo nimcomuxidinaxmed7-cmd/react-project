@@ -1,52 +1,30 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Routes, Route } from 'react-router-dom'
-import Navbar from './Navbar'
-import { AuthProvider } from '../context/AuthContext'
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import Navbar from "./Navbar";
 
-function renderNavbar() {
-  return render(
-    <AuthProvider>
-      <MemoryRouter initialEntries={['/cart']}>
+describe("Navbar", () => {
+  it("shows the ShopEase name and navigation links", () => {
+    render(
+      <MemoryRouter>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<p>Home page</p>} />
-          <Route path="/cart" element={<p>Cart page</p>} />
-        </Routes>
       </MemoryRouter>
-    </AuthProvider>
-  )
-}
+    );
 
-describe('Navbar', () => {
-  beforeEach(() => localStorage.clear())
+    expect(screen.getByText("ShopEase")).toBeInTheDocument();
+    expect(screen.getByText("Home")).toBeInTheDocument();
+    expect(screen.getByText("Cart")).toBeInTheDocument();
+    expect(screen.getByText("Register")).toBeInTheDocument();
+  });
 
-  it('shows the ShopEase name and navigation links', () => {
-    renderNavbar()
-    expect(screen.getByText('ShopEase')).toBeInTheDocument()
-    expect(screen.getByText('Home')).toBeInTheDocument()
-    expect(screen.getByText('Cart')).toBeInTheDocument()
-  })
+  it("does not show Login or Logout", () => {
+    render(
+      <MemoryRouter>
+        <Navbar />
+      </MemoryRouter>
+    );
 
-  it('shows Register when nobody is logged in', () => {
-    renderNavbar()
-    expect(screen.getByText('Register')).toBeInTheDocument()
-  })
-
-  it('shows the user name and logs out', async () => {
-    localStorage.setItem('shopease_user', JSON.stringify({
-      name: 'Alex',
-      email: 'alex@test.com'
-    }))
-
-    const user = userEvent.setup()
-    renderNavbar()
-
-    expect(screen.getByText('Hi, Alex')).toBeInTheDocument()
-    await user.click(screen.getByText('Logout'))
-
-    expect(screen.getByText('Home page')).toBeInTheDocument()
-    expect(localStorage.getItem('shopease_user')).toBeNull()
-  })
-})
+    expect(screen.queryByText("Login")).not.toBeInTheDocument();
+    expect(screen.queryByText("Logout")).not.toBeInTheDocument();
+  });
+});
