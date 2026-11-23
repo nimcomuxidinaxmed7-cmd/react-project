@@ -62,7 +62,6 @@ npm run test
 
  Project Evidence & Documentation
 | GitHub Repository | [View Source Code](https://github.com/nimcomuxidinaxmed7-cmd/react-project) |
-| Live Application | [View ShopEase](https://react-project-ta8u.netlify.app/) |
 | Figma Design | Add Figma link https://www.figma.com/design/CvRtHCo6SBxJy1QKKpOdCo/React-project-design?node-id=0-1&t=BvIpMx0MbhjMETAy-1
 | GitHub Actions / CI/CD | [View Workflows](https://github.com/nimcomuxidinaxmed7-cmd/react-project/actions) |
 | GitHub Pages Deployment | [View Deployment](https://nimcomuxidinaxmed7-cmd.github.io/react-project/) |
